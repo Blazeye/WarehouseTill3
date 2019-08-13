@@ -24,7 +24,7 @@ namespace WarehouseTill
             // Prepare
 
             // Run & Analyze
-            Assert.Throws<NullReferenceException>(() => new Till(null)); // We expect that it throws an exception
+            Assert.Throws<ObjectIsNullException>(() => new Till(null)); // We expect that it throws an exception
         }
 
         [Test]

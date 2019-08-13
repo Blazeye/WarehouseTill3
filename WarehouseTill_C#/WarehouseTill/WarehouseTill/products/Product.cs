@@ -21,14 +21,9 @@ namespace WarehouseTill.products
 
         public Product(string barcode, string description, decimal amount)
         {
-            if(!(barcode.Length == 4) || description.Length > 28)
-            {
-                return;
-            }
-            string Barcode = barcode;
-            string Description = description;
-            decimal Amount = amount;
-
+            this.Barcode = barcode;
+            this.Description = description;
+            this.Amount = amount; 
         }
         
     }
