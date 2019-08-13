@@ -1,0 +1,7 @@
+C:\Users\Gebruiker\source\repos\WarehouseTill_C#\WarehouseTill\WarehouseTill\bin\Debug\WarehouseTill.exe.config
+C:\Users\Gebruiker\source\repos\WarehouseTill_C#\WarehouseTill\WarehouseTill\bin\Debug\WarehouseTill.exe
+C:\Users\Gebruiker\source\repos\WarehouseTill_C#\WarehouseTill\WarehouseTill\bin\Debug\WarehouseTill.pdb
+C:\Users\Gebruiker\source\repos\WarehouseTill_C#\WarehouseTill\WarehouseTill\obj\Debug\WarehouseTill.csprojAssemblyReference.cache
+C:\Users\Gebruiker\source\repos\WarehouseTill_C#\WarehouseTill\WarehouseTill\obj\Debug\WarehouseTill.csproj.CoreCompileInputs.cache
+C:\Users\Gebruiker\source\repos\WarehouseTill_C#\WarehouseTill\WarehouseTill\obj\Debug\WarehouseTill.exe
+C:\Users\Gebruiker\source\repos\WarehouseTill_C#\WarehouseTill\WarehouseTill\obj\Debug\WarehouseTill.pdb
