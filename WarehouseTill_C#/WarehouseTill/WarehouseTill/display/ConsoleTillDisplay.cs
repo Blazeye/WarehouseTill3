@@ -1,8 +1,10 @@
-﻿using WarehouseTill.products;
-using WarehouseTill.till;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using WarehouseTill.model;
+using WarehouseTill.products;
+using WarehouseTill.repository;
+using WarehouseTill.till;
 
 namespace WarehouseTill.display
 {
@@ -13,49 +15,83 @@ namespace WarehouseTill.display
     {
         private ITill Till { get; }
 
-        public ConsoleTillDisplay(ITill till) {
-            Till = till;
-            // Install ourselfs as display target
-            Till.SetDisplayInterface((ITillDisplay)this);
+        public ConsoleTillDisplay(ITill till)
+        {
+            if (till == null)
+            {
+                throw new till.ArgumentNullException("object is null");
+            }
+            try
+            {
+                Till = till;
+                // Install ourselfs as display target
+                Till.SetDisplayInterface((ITillDisplay)this);
+            }
+            catch (till.ArgumentNullException e2)
+            {
+                Console.WriteLine(e2.ToString());
+            }
         }
 
-        public void Run() {
+        public void Run()
+        {
+            Console.OutputEncoding = Encoding.UTF8;
             Till.ShowAllProducts();
             ShowMenu();
             string input = Console.ReadLine().ToLower().Trim();
 
-            while (input != "q") {
-                switch(input.Substring(0, 1)) {
+            while (input != "q")
+            {
+                switch (input.Substring(0, 1))
+                {
                     case "p":
                         Till.ShowAllProducts();
                         break;
 
                     case "b":
+                        if (input == "b")
+                        {
+                            Console.WriteLine("Customer hasn't paid");
+                            break;
+                        }
                         decimal amount = decimal.Parse(input.Substring(1));
                         var result = Till.InitiatePayment(amount);
-                        if (result == null) {
+                        if (result == null)
+                        {
                             Console.Out.WriteLine("Payment failed");
-                        } else if (result.Count == 0) {
+                        }
+                        else if (result.Count == 0)
+                        {
+                            var order = new Purchase();
+
+                            Till.AddOrder();
                             Console.Out.WriteLine("Payment successful");
-                        } else {
+                        }
+                        else
+                        {
                             StringBuilder resultString = new StringBuilder();
-                            foreach (var pair in result) {
-                                if (resultString.Length != 0) {
+                            foreach (var pair in result)
+                            {
+                                if (resultString.Length != 0)
+                                {
                                     resultString.Append(", ");
                                 }
-                                resultString.AppendFormat("{0,c}: {1}x", pair.Key, pair.Value);
+                                resultString.AppendFormat("{0:c}: {1}x", pair.Key, pair.Value);
                             }
+                            Till.AddOrder();
                             Console.Out.WriteLine("Payment done, please return {0}", resultString.ToString());
                         }
                         break;
-                        
+
                     default:
-                        if (!Till.HandleBarcode(input)) {
+                        if (!Till.HandleBarcode(input))
+                        {
                             Console.Out.WriteLine("Product could not be added");
                         }
                         break;
                 }
                 ShowMenu();
+                Till.ShowScannedItems();
                 input = Console.ReadLine().ToLower().Trim();
             }
         }
@@ -63,7 +99,8 @@ namespace WarehouseTill.display
         /// <summary>
         /// Show the menu
         /// </summary>
-        private void ShowMenu() {
+        private void ShowMenu()
+        {
             Console.Out.WriteLine("P         : Toon alle producten");
             Console.Out.WriteLine("<Barcode> : Scan de barcode code");
             Console.Out.WriteLine("B<bedrag> : Doe een betaling");
@@ -74,7 +111,8 @@ namespace WarehouseTill.display
         /// <summary>
         /// Implements ITillDisplay.DisplayClientScreen
         /// </summary>
-        public void DisplayClientScreen(string line1, string line2) {
+        public void DisplayClientScreen(string line1, string line2)
+        {
             Console.Out.WriteLine("==========================================");
             Console.Out.WriteLine("|{0,-40}|", line1);
             Console.Out.WriteLine("|{0,-40}|", line2);
@@ -84,9 +122,11 @@ namespace WarehouseTill.display
         /// <summary>
         /// Implements ITillDisplay.DisplayProducts
         /// </summary>
-        public void DisplayProducts(string title, IList<IProduct> products) {
+        public void DisplayProducts(string title, IList<IProduct> products)
+        {
             Console.Out.WriteLine("======================== " + title + " =======================");
-            foreach (IProduct product in products) {
+            foreach (IProduct product in products)
+            {
                 Console.Out.WriteLine(String.Format("{0,4} {1,-40} {2:c}",
                     product.Barcode, product.Description, product.Amount));
             }

@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace WarehouseTill.till
 {
-    public class ObjectIsNullException : Exception
+    public class ArgumentNullException : Exception
     {
-        public ObjectIsNullException() : base(){}
+        public ArgumentNullException() : base(){}
 
-        public ObjectIsNullException(string message) : base(message){}
+        public ArgumentNullException(string message) : base(message){}
 
-        public ObjectIsNullException(string message, System.Exception inner) : base(message, inner){}
+        public ArgumentNullException(string message, System.Exception inner) : base(message, inner){}
 
-        protected ObjectIsNullException(System.Runtime.Serialization.SerializationInfo info,
-    System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+        protected ArgumentNullException(System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

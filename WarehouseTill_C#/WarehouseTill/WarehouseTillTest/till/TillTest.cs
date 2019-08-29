@@ -1,18 +1,22 @@
-﻿using WarehouseTill.till;
+﻿using EventsTillTest.till;
 using NUnit.Framework;
-using System;
+using WarehouseTill.till;
 
 namespace WarehouseTill
 {
     [TestFixture]
+
+
     public class TillTest
     {
         [Test]
-        public void TestConstructor() {
+        public void TestConstructor()
+        {
             // Prepare
 
             // Run
-            var sut = new Till(new TestProductCatalogus()); // SUT = Software Under Test
+            TestProgram program = new TestProgram();
+            var sut = new Till(new TestProductCatalogus(), new CashRegister(program.StartRegister())); // SUT = Software Under Test
 
             // Analyze
             Assert.NotNull(sut); // We expect that 'SUT' is a valid object
@@ -20,20 +24,27 @@ namespace WarehouseTill
         }
 
         [Test]
-        public void TestEmptyConstructor() {
+        public void TestEmptyConstructor()
+        {
             // Prepare
 
             // Run & Analyze
-            Assert.Throws<ObjectIsNullException>(() => new Till(null)); // We expect that it throws an exception
+            //TestProgram program = new TestProgram();
+            //Till sut = new Till(null, null);
+            //Assert.IsNull(new Till(null, null));
+
+            Assert.Throws<ArgumentNullException>(() => new Till(null, null)); // We expect that it throws an exception
         }
 
         [Test]
-        public void TestShowAllProducts() {
+        public void TestShowAllProducts()
+        {
             // Prepare
             TestProductCatalogus catalogus = new TestProductCatalogus();
             TestDisplay display = new TestDisplay();
+            TestProgram program = new TestProgram();
 
-            var sut = new Till(catalogus); // SUT = Software Under Test
+            var sut = new Till(catalogus, new CashRegister(program.StartRegister())); // SUT = Software Under Test
             sut.SetDisplayInterface(display);
 
             // Run

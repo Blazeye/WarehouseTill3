@@ -1,5 +1,6 @@
 ﻿using WarehouseTill.display;
 using System.Collections.Generic;
+using WarehouseTill.products;
 
 namespace WarehouseTill.till
 {
@@ -8,6 +9,7 @@ namespace WarehouseTill.till
     /// </summary>
     public interface ITill
     {
+        List<IProduct> cart { get; set; }
         /// <summary>
         /// Installs an interface to be used when displaying
         /// </summary>
@@ -32,5 +34,8 @@ namespace WarehouseTill.till
         /// Show all products
         /// </summary>
         void ShowAllProducts();
+
+        void ShowScannedItems();
+        void AddOrder();
     }
 }
