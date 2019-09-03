@@ -5,18 +5,20 @@ using WarehouseTill.display;
 using WarehouseTill.model;
 using WarehouseTill.products;
 using WarehouseTill.repository;
+using WarehouseTill.warehouse;
+using WarehouseTill.printer;
 
 namespace WarehouseTill.till
 {
     public class Till : ITill
     {
+        public event EventHandler<ItemEventArgs> ItemScanned;
+        public event EventHandler<OrdersListEventArgs> ItemPayed;
         public List<IProduct> cart{ get; set; } = new List<IProduct>();
-        //private decimal sum { get; set; }
         private IProductCatalog Catalog { get; set; }
         private ICashRegister Register { get; }
-        private ITillDisplay Display { get; set; }
+        //private ITillDisplay Display { get; set; }
         private SortedDictionary<decimal, int> initialContent { get; }
-        //private CashRegister register { get; }
 
         /// <summary>
         /// Constructor
@@ -44,10 +46,27 @@ namespace WarehouseTill.till
             IProduct product = Catalog.FindProductForBarcode(barcode);
             if (product != null)
             {
-                cart.Add(product);
+                RaiseItemScanned(product);
                 return true;
             }
             return false;
+        }
+        private void RaiseItemScanned(IProduct product)
+        {
+            EventHandler<ItemEventArgs> handler = ItemScanned;
+            if(handler != null)
+            {
+                handler(this, new ItemEventArgs(product));
+            }
+        }
+
+        private void RaisePrintItems(Dictionary<string, OrdersProduct> dict)
+        {
+            EventHandler<OrdersListEventArgs> handler = ItemPayed;
+            if(handler != null)
+            {
+                handler(this, new OrdersListEventArgs(dict));
+            }
         }
 
         /// <summary>
@@ -76,27 +95,35 @@ namespace WarehouseTill.till
         /// Installs an interface to be used when displaying
         /// </summary>
         /// <param name="tillDisplay">The interface to use from now on</param>
-        public void SetDisplayInterface(ITillDisplay tillDisplay)
-        {
-            if(tillDisplay == null)
-            {
+        //public void SetDisplayInterface(ITillDisplay tillDisplay)
+        //{
+        //    if(tillDisplay == null)
+        //    {
 
-                throw new NullReferenceException("Display is null");
+        //        throw new NullReferenceException("Display is null");
 
-            }
-            this.Display = tillDisplay;
-        }
+        //    }
+        //    this.Display = tillDisplay;
+        //}
 
         /// <summary>
         /// Trigger a show all products
         /// </summary>
-        public void ShowAllProducts()
+        public void HandleShowingProducts(object s, EventArgs e)
         {
             string title = "PRODUCTEN:";
             try
             {
                 IList<IProduct> items = this.Catalog.GetAllProducts();
-                this.Display.DisplayProducts(title, items);
+
+
+                Console.Out.WriteLine("======================== " + title + " =======================");
+                foreach (IProduct product in items)
+                {
+                    Console.Out.WriteLine(String.Format("{0,4} {1,-40} {2:c}",
+                        product.Barcode, product.Description, product.Amount));
+                }
+                Console.Out.WriteLine("=========================================================");
             }
             catch (ArgumentNullException e1)
             {
@@ -105,16 +132,27 @@ namespace WarehouseTill.till
             }
         }
 
-        /// <summary>
-        /// Trigger a show all scanned items
-        /// </summary>
-        public void ShowScannedItems()
+        public void HandleFilledCart(object s, ItemEventArgs e)
+        { 
+            {
+                cart.Add(e.Item);
+            }
+        }
+
+        public void HandleShowingScanned(object s, EventArgs e)
         {
             if (cart.Count > 0)
             {
                 int productIndex = cart.Count - 1;
                 decimal sum = CalculateAmountOfItems();
-                this.Display.DisplayClientScreen("TOTAAL: \u20ac " + Convert.ToString(Decimal.Round(sum,2)), cart[productIndex].Description);
+                string line1 = "TOTAAL: \u20ac " + Convert.ToString(Decimal.Round(sum, 2));
+                string line2 = cart[productIndex].Description;
+
+
+                Console.Out.WriteLine("==========================================");
+                Console.Out.WriteLine("|{0,-40}|", line1);
+                Console.Out.WriteLine("|{0,-40}|", line2);
+                Console.Out.WriteLine("==========================================");
             }
         }
 
@@ -157,6 +195,7 @@ namespace WarehouseTill.till
                 dict[key].Order_id = order.Id;
                 repository2.Add(dict[key]);
             }
+            RaisePrintItems(dict);
             cart.Clear();
         }
     }
